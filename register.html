@@ -5,21 +5,15 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <title>Registration | Eliman Worker</title>
 
-  <!-- Tailwind -->
   <script src="https://cdn.tailwindcss.com"></script>
-
-  <!-- MAIN STYLE -->
-  <link rel="stylesheet" href="css/style.css?v=999">
+  <link rel="stylesheet" href="css/style.css">
 </head>
 
 <body class="p-5 pb-20">
 
-  <!-- STEP 0 – LANGUAGE -->
+  <!-- STEP 0 -->
   <section id="stepLang">
-    <h2 id="langTitle" class="text-3xl font-bold mb-2">
-      Choose language
-    </h2>
-
+    <h2 id="langTitle" class="text-3xl font-bold mb-2">Choose language</h2>
     <p id="langSubtitle" class="text-gray-500 mb-6">
       Select your language. Registration will be shown in your language.
     </p>
@@ -29,7 +23,7 @@
     <div class="card lang" data-lang="es">Español</div>
   </section>
 
-  <!-- STEP 1 – PROFILE -->
+  <!-- STEP 1 -->
   <section id="step1" class="hidden">
     <h2 id="step1Title" class="text-3xl font-bold mb-2">Profile</h2>
     <p id="step1Subtitle" class="text-gray-500 mb-4">Enter your details</p>
@@ -44,10 +38,10 @@
     </div>
     <input id="zip" class="input-box" placeholder="ZIP code">
 
-    <button class="btn-main" id="next1">Next</button>
+    <button id="next1" class="btn-main">Next</button>
   </section>
 
-  <!-- STEP 2 – CATEGORY -->
+  <!-- STEP 2 -->
   <section id="step2" class="hidden">
     <h2 id="step2Title" class="text-3xl font-bold mb-2">Category</h2>
     <p id="step2Subtitle" class="text-gray-500 mb-4">
@@ -58,27 +52,20 @@
     <div class="card category" data-cat="Cleaning">Cleaning</div>
     <div class="card category" data-cat="Handyman">Handyman</div>
     <div class="card category" data-cat="Locksmith">Locksmith</div>
-    <div class="card category" data-cat="Moving">Moving</div>
-    <div class="card category" data-cat="SmartHome">Smart Home</div>
-    <div class="card category" data-cat="Tire">Tire & Roadside</div>
 
-    <button class="btn-main" id="next2">Next</button>
+    <button id="next2" class="btn-main">Next</button>
   </section>
 
-  <!-- STEP 3 – PHOTO -->
+  <!-- STEP 3 -->
   <section id="step3" class="hidden text-center">
     <h2 id="step3Title" class="text-3xl font-bold mb-3">Profile photo</h2>
 
-    <div class="photo-box" id="photoBox">Click to upload</div>
-    <input type="file" id="photoInput" class="hidden" accept="image/*">
+    <div id="photoBox" class="photo-box">Click to upload</div>
+    <input id="photoInput" type="file" class="hidden" accept="image/*">
 
-    <button class="btn-main" id="finishBtn">Finish</button>
+    <button id="finishBtn" class="btn-main">Finish</button>
   </section>
 
-  <!-- SCRIPTS -->
-  <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
-  <script src="js/supabase.js"></script>
   <script src="js/register_v2.js"></script>
-
 </body>
 </html>
