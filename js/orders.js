@@ -25,7 +25,8 @@ async function loadOrders() {
     return;
   }
 
-  const category = worker.category; // например "Cleaning"
+  // 🔥 ПРИВОДИМ К LOWERCASE
+  const category = worker.category.toLowerCase().trim();
 
   console.log("Worker category:", category);
 
@@ -33,7 +34,7 @@ async function loadOrders() {
   const { data: orders, error: ordersError } = await window.db
     .from("orders")
     .select("*")
-    .eq("service_type", category)
+    .ilike("service_type", category) // 🔥 ВАЖНО
     .order("date", { ascending: true });
 
   if (ordersError) {
@@ -62,7 +63,7 @@ async function loadOrders() {
             <h2 class="text-lg font-semibold">${order.service_name}</h2>
             <p class="muted">${order.service_type}</p>
           </div>
-          <div class="price">$${order.price}</div>
+          <div class="price">$${order.price || 0}</div>
         </div>
 
         <div class="flex justify-between items-center mt-3 muted">
