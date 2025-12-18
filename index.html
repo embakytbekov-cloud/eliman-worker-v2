@@ -1,0 +1,38 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Order Details</title>
+
+  <script src="https://cdn.tailwindcss.com"></script>
+  <script src="https://telegram.org/js/telegram-web-app.js"></script>
+
+  <link rel="stylesheet" href="css/style.css?v=4000">
+</head>
+
+<body class="min-h-screen px-4 pt-6 pb-28">
+
+  <!-- HEADER -->
+  <header class="mb-6 flex items-center justify-between">
+    <h1 class="text-xl font-bold">Детали заказа</h1>
+    <button onclick="window.history.back()" class="details-link text-xl">✕</button>
+  </header>
+
+  <!-- ORDER CARD -->
+  <main id="orderDetails"></main>
+
+  <!-- ACTION -->
+  <button
+    id="acceptBtn"
+    onclick="acceptOrder()"
+    class="btn w-full mt-6">
+    Принять заказ — $1
+  </button>
+
+  <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+  <script src="js/supabase.js"></script>
+  <script src="js/order-details.js?v=4000"></script>
+
+</body>
+</html>
