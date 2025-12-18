@@ -97,16 +97,15 @@
   <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
   
   <script>
-    // Фикс для синхронизации ID с базой данных
+    // Инициализация Telegram и фикс ID
     if (window.Telegram && window.Telegram.WebApp) {
       const tg = window.Telegram.WebApp;
       tg.expand();
       
       if (tg.initDataUnsafe?.user?.id) {
-        // Принудительно превращаем в строку и убираем лишнее
+        // Очищаем ID и сохраняем как строку для Supabase
         const cleanId = String(tg.initDataUnsafe.user.id).trim();
         localStorage.setItem("telegram_id", cleanId);
-        console.log("Clean ID for Database:", cleanId);
       }
     }
   </script>
