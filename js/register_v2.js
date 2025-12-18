@@ -104,4 +104,4 @@ finishBtn.onclick = () => {
   alert("Finish works ✅\nSupabase можно подключить позже");
 };
 
-applyTranslations();
+applyTranslations(); 
