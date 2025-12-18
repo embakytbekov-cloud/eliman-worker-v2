@@ -137,7 +137,7 @@ let workerKey = null;
     }
   }
 
-  workerKey = telegramId || `anon_${Date.now()}`;
+  workerKey = localStorage.getItem("telegram_id");
 })();
 
 
