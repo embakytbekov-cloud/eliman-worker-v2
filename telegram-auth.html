@@ -1,1 +1,77 @@
+ <!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Eliman Worker</title>
 
+  <!-- Tailwind -->
+  <script src="https://cdn.tailwindcss.com"></script>
+
+  <!-- Supabase -->
+  <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+  <script src="js/supabase.js"></script>
+
+  <style>
+    body {
+      background:#000;
+      color:white;
+      display:flex;
+      align-items:center;
+      justify-content:center;
+      height:100vh;
+      font-family:system-ui;
+    }
+  </style>
+</head>
+
+<body>
+
+  <div class="text-center">
+    <h1 class="text-2xl font-bold mb-3">Eliman Worker</h1>
+    <p id="status" class="text-gray-400">Checking account...</p>
+  </div>
+
+<script>
+(async () => {
+  const status = document.getElementById("status");
+
+  // 1️⃣ берём telegram_id
+  const params = new URLSearchParams(window.location.search);
+  const telegramId = params.get("telegram_id");
+
+  if (!telegramId) {
+    status.textContent = "Open this app from Telegram bot";
+    return;
+  }
+
+  // 2️⃣ ищем worker
+  const { data: worker, error } = await window.db
+    .from("workers")
+    .select("id, accepted_work_agreement")
+    .eq("telegram_id", telegramId)
+    .single();
+
+  // 3️⃣ если НЕ найден — регистрация
+  if (!worker || error) {
+    window.location.href =
+      `registration.html?telegram_id=${telegramId}`;
+    return;
+  }
+
+  // 4️⃣ если не принял agreement
+  if (!worker.accepted_work_agreement) {
+    window.location.href =
+      `work-agreement.html?telegram_id=${telegramId}`;
+    return;
+  }
+
+  // 5️⃣ иначе — ордера
+  window.location.href =
+    `orders.html?telegram_id=${telegramId}`;
+
+})();
+</script>
+
+</body>
+</html>
