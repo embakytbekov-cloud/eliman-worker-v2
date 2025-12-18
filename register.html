@@ -11,7 +11,7 @@
 
 <body class="p-5 pb-20">
 
-  <!-- STEP 0 -->
+  <!-- STEP 0 – LANGUAGE -->
   <section id="stepLang">
     <h2 id="langTitle" class="text-3xl font-bold mb-2">Choose language</h2>
     <p id="langSubtitle" class="text-gray-500 mb-6">
@@ -23,7 +23,7 @@
     <div class="card lang" data-lang="es">Español</div>
   </section>
 
-  <!-- STEP 1 -->
+  <!-- STEP 1 – PROFILE -->
   <section id="step1" class="hidden">
     <h2 id="step1Title" class="text-3xl font-bold mb-2">Profile</h2>
     <p id="step1Subtitle" class="text-gray-500 mb-4">Enter your details</p>
@@ -41,7 +41,7 @@
     <button id="next1" class="btn-main">Next</button>
   </section>
 
-  <!-- STEP 2 -->
+  <!-- STEP 2 – CATEGORY -->
   <section id="step2" class="hidden">
     <h2 id="step2Title" class="text-3xl font-bold mb-2">Category</h2>
     <p id="step2Subtitle" class="text-gray-500 mb-4">
@@ -52,16 +52,22 @@
     <div class="card category" data-cat="Cleaning">Cleaning</div>
     <div class="card category" data-cat="Handyman">Handyman</div>
     <div class="card category" data-cat="Locksmith">Locksmith</div>
+    <div class="card category" data-cat="Moving">Moving</div>
+    <div class="card category" data-cat="SmartHome">Smart Home</div>
+    <div class="card category" data-cat="Tire">Tire & Roadside</div>
 
     <button id="next2" class="btn-main">Next</button>
   </section>
 
-  <!-- STEP 3 -->
+  <!-- STEP 3 – PHOTO -->
   <section id="step3" class="hidden text-center">
     <h2 id="step3Title" class="text-3xl font-bold mb-3">Profile photo</h2>
 
-    <div id="photoBox" class="photo-box">Click to upload</div>
-    <input id="photoInput" type="file" class="hidden" accept="image/*">
+    <!-- iOS FIX -->
+    <label class="photo-box">
+      <span id="photoText">Click to upload</span>
+      <input id="photoInput" type="file" accept="image/*" hidden>
+    </label>
 
     <button id="finishBtn" class="btn-main">Finish</button>
   </section>
