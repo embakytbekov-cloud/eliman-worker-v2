@@ -1,7 +1,7 @@
 // ----------------------------
 // LANGUAGE + CATEGORY
 // ----------------------------
-let currentLang = "ru";
+let currentLang = "en";
 let selectedCategory = null;
 
 // ----------------------------
