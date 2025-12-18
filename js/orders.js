@@ -1,72 +1,99 @@
 const ordersList = document.getElementById("ordersList");
 
-const workerId = localStorage.getItem("telegram_id");
+// 1. Пытаемся получить ID
+let workerId = localStorage.getItem("telegram_id");
+
+// ДОБАВКА ДЛЯ ТЕСТА: Если localStorage пустой, пробуем вытащить из Telegram SDK напрямую
+if (!workerId && window.Telegram?.WebApp?.initDataUnsafe?.user) {
+    workerId = String(window.Telegram.WebApp.initDataUnsafe.user.id);
+    localStorage.setItem("telegram_id", workerId);
+}
+
+console.log("DEBUG: Worker ID is:", workerId);
 
 if (!workerId) {
-  ordersList.innerHTML =
-    "<p class='text-red-500'>Worker not identified</p>";
-  throw new Error("telegram_id missing");
+    ordersList.innerHTML = `
+        <div class="text-center p-5">
+            <p class='text-red-500 font-bold'>Worker not identified</p>
+            <p class='text-gray-400 text-sm mt-2'>Please restart the app from Telegram</p>
+            <button onclick="location.reload()" class="bg-green-500 text-black px-4 py-2 rounded mt-4">Retry</button>
+        </div>
+    `;
+} else {
+    loadOrders();
 }
 
 async function loadOrders() {
-  // 1️⃣ get worker category
-  const { data: worker, error: workerError } = await window.db
-    .from("workers")
-    .select("category")
-    .eq("telegram_id", workerId)
-    .single();
+    try {
+        console.log("DEBUG: Loading worker profile for ID:", workerId);
+        
+        // 1️⃣ Получаем категорию воркера
+        const { data: worker, error: workerError } = await window.db
+            .from("workers")
+            .select("category")
+            .eq("telegram_id", workerId)
+            .single();
 
-  if (workerError || !worker) {
-    console.error("Worker error:", workerError);
-    ordersList.innerHTML =
-      "<p class='text-red-500'>Failed to load worker</p>";
-    return;
-  }
+        if (workerError || !worker) {
+            console.error("Worker DB Error:", workerError);
+            ordersList.innerHTML = `
+                <p class='text-red-500 text-center mt-10'>
+                    Worker not found in database.<br>
+                    <span class="text-xs text-gray-500">ID: ${workerId}</span>
+                </p>`;
+            return;
+        }
 
-  const category = worker.category.toLowerCase().trim();
+        const category = worker.category; // Берем как есть (например, "Cleaning")
+        console.log("DEBUG: Worker category is:", category);
 
-  // 2️⃣ load orders by category
-  const { data: orders, error: ordersError } = await window.db
-    .from("orders")
-    .select("*")
-    .ilike("service_type", `%${category}%`)
-    .order("date", { ascending: true });
+        // 2️⃣ Загружаем заказы. Используем ilike для поиска без учета регистра
+        const { data: orders, error: ordersError } = await window.db
+            .from("orders")
+            .select("*")
+            .ilike("service_type", `%${category}%`)
+            .order("date", { ascending: true });
 
-  if (ordersError) {
-    ordersList.innerHTML =
-      "<p class='text-red-500'>Failed to load orders</p>";
-    return;
-  }
+        if (ordersError) {
+            console.error("Orders DB Error:", ordersError);
+            ordersList.innerHTML = "<p class='text-red-500 text-center mt-10'>Failed to load orders from DB</p>";
+            return;
+        }
 
-  if (!orders || orders.length === 0) {
-    ordersList.innerHTML = `
-      <p class="text-slate-400 text-center mt-10">
-        No orders available for your category
-      </p>
-    `;
-    return;
-  }
+        if (!orders || orders.length === 0) {
+            ordersList.innerHTML = `
+                <div class="text-center mt-10">
+                    <p class="text-gray-400">No orders available for category:</p>
+                    <p class="text-green-500 font-bold">${category}</p>
+                </div>
+            `;
+            return;
+        }
 
-  ordersList.innerHTML = "";
+        // 3️⃣ Отрисовка
+        ordersList.innerHTML = "";
+        orders.forEach(order => {
+            ordersList.innerHTML += `
+                <div class="card bg-[#111] border border-[#2a2a2a] p-4 rounded-2xl mb-4">
+                    <div class="flex justify-between items-start mb-2">
+                        <div>
+                            <h2 class="text-lg font-semibold">${order.service_name || 'No Name'}</h2>
+                            <p class="text-gray-400 text-sm">${order.service_type}</p>
+                        </div>
+                        <div class="bg-[#3fc060] text-black px-3 py-1 rounded-full font-bold">
+                            $${order.price || 0}
+                        </div>
+                    </div>
+                    <div class="flex justify-between items-center mt-3 text-sm text-gray-400">
+                        <div>📍 ${order.address || 'No address'}</div>
+                        <div>🕒 ${order.date || ''} ${order.time || ''}</div>
+                    </div>
+                </div>
+            `;
+        });
 
-  orders.forEach(order => {
-    ordersList.innerHTML += `
-      <div class="card">
-        <div class="flex justify-between items-start mb-2">
-          <div>
-            <h2 class="text-lg font-semibold">${order.service_name}</h2>
-            <p class="muted">${order.service_type}</p>
-          </div>
-          <div class="price">$${order.price || 0}</div>
-        </div>
-
-        <div class="flex justify-between items-center mt-3 muted">
-          <div>📍 ${order.address}</div>
-          <div>🕒 ${order.date} ${order.time}</div>
-        </div>
-      </div>
-    `;
-  });
+    } catch (err) {
+        console.error("Critical Error:", err);
+        ordersList.innerHTML = "<p class='text-red-500 text-center'>Critical app error</p>";
+    }
 }
-
-loadOrders();
