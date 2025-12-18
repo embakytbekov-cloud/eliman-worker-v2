@@ -1,1 +1,62 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Orders | Eliman Worker</title>
 
+  <!-- Tailwind -->
+  <script src="https://cdn.tailwindcss.com"></script>
+
+  <!-- Supabase -->
+  <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+  <script src="js/supabase.js"></script>
+
+  <style>
+    body {
+      background:#020617;
+      color:white;
+    }
+    .card {
+      background: linear-gradient(145deg, #020617, #020617);
+      border-radius: 20px;
+      padding: 16px;
+      margin-bottom: 16px;
+      box-shadow: inset 0 0 0 1px rgba(255,255,255,0.05);
+    }
+    .price {
+      background:#14b8a6;
+      color:#020617;
+      padding:6px 14px;
+      border-radius:999px;
+      font-weight:bold;
+    }
+    .muted {
+      color:#94a3b8;
+      font-size:13px;
+    }
+    .details {
+      color:#14b8a6;
+      font-weight:600;
+    }
+  </style>
+</head>
+
+<body class="p-4">
+
+  <h1 class="text-2xl font-bold mb-4">Available Orders</h1>
+
+  <!-- ORDERS -->
+  <div id="ordersList"></div>
+
+  <!-- BOTTOM NAV -->
+  <div class="fixed bottom-0 left-0 right-0 bg-slate-900 flex justify-around py-3 text-sm">
+    <div class="text-teal-400">🧳 Orders</div>
+    <div class="text-slate-400">⏱ Active</div>
+    <div class="text-slate-400">🛒 Market</div>
+    <div class="text-slate-400">👤 Profile</div>
+  </div>
+
+  <script src="js/orders.js"></script>
+</body>
+</html>
