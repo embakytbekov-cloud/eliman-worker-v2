@@ -1,92 +1,55 @@
 :root {
-  --bg-main: #020617;          /* almost black */
-  --card-bg: #020617;          /* cards same dark */
-  --card-border: #1e293b;
-
-  --text-main: #e5e7eb;
-  --text-muted: #94a3b8;
-
-  --accent: #14b8a6;           /* teal */
-  --accent-soft: rgba(20,184,166,.12);
+  --bg-main:#020617;
+  --card-bg:#020617;
+  --card-border:#1e293b;
+  --text-main:#e5e7eb;
+  --text-muted:#94a3b8;
+  --accent:#14b8a6;
+  --accent-soft:rgba(20,184,166,.12);
 }
 
 body {
   background: radial-gradient(circle at top, #020617 0%, #000 70%);
   color: var(--text-main);
-  font-family: system-ui, -apple-system, BlinkMacSystemFont, sans-serif;
 }
-
-/* ================= CARDS ================= */
 
 .card {
-  background: linear-gradient(145deg, #020617, #020617);
-  border: 1px solid var(--card-border);
-  border-radius: 18px;
-  padding: 16px;
-  margin-bottom: 12px;
-  cursor: pointer;
-  transition: all .25s ease;
-}
-
-.card:hover {
-  border-color: var(--accent);
+  border:1px solid var(--card-border);
+  border-radius:18px;
+  padding:16px;
+  margin-bottom:12px;
 }
 
 .card.selected {
-  background: linear-gradient(145deg, #14b8a6, #0ea5e9);
-  color: #021617;
-  border-color: var(--accent);
+  background:linear-gradient(145deg,#14b8a6,#0ea5e9);
+  color:#021617;
 }
-
-/* ================= INPUTS ================= */
 
 .input-box {
-  width: 100%;
-  background: #020617;
-  padding: 14px;
-  border-radius: 14px;
-  margin-bottom: 14px;
-  color: var(--text-main);
-  border: 1px solid var(--card-border);
+  width:100%;
+  padding:14px;
+  border-radius:14px;
+  margin-bottom:14px;
+  background:#020617;
+  border:1px solid var(--card-border);
 }
-
-.input-box::placeholder {
-  color: var(--text-muted);
-}
-
-/* ================= BUTTON ================= */
 
 .btn-main {
-  width: 100%;
-  background: linear-gradient(135deg, #14b8a6, #0ea5e9);
-  color: #021617;
-  padding: 16px;
-  border-radius: 18px;
-  font-size: 18px;
-  font-weight: 800;
-  margin-top: 20px;
-  border: none;
-  box-shadow: 0 0 30px rgba(20,184,166,.45);
+  width:100%;
+  padding:16px;
+  border-radius:18px;
+  font-weight:800;
+  background:linear-gradient(135deg,#14b8a6,#0ea5e9);
 }
-
-/* ================= PHOTO ================= */
 
 .photo-box {
-  width: 160px;
-  height: 160px;
-  border-radius: 100%;
-  border: 2px dashed var(--accent);
-  margin: 40px auto;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  cursor: pointer;
-  color: var(--accent);
-  background: var(--accent-soft);
-}
-
-/* ================= TEXT ================= */
-
-.text-gray-500 {
-  color: var(--text-muted) !important;
+  width:160px;
+  height:160px;
+  border-radius:100%;
+  border:2px dashed var(--accent);
+  margin:40px auto;
+  display:flex;
+  align-items:center;
+  justify-content:center;
+  cursor:pointer;
 }
