@@ -35,7 +35,7 @@ async function loadOrders() {
         </div>
 
         <div class="mt-3 text-right">
-          <span class="details">Подробнее →</span>
+          <span class="details">More details →</span>
         </div>
       </div>
     `;
