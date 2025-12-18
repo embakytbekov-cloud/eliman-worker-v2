@@ -5,20 +5,19 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <title>Eliman Worker</title>
 
-  <script src="https://cdn.tailwindcss.com"></script>
+  <!-- Telegram Mini App -->
   <script src="https://telegram.org/js/telegram-web-app.js"></script>
 
-  <link rel="stylesheet" href="css/style.css?v=4000">
+  <script>
+    // Telegram ready (не ломает, если не в TG)
+    if (window.Telegram && window.Telegram.WebApp) {
+      Telegram.WebApp.ready();
+      Telegram.WebApp.expand();
+    }
+
+    // 👉 КАК РАНЬШЕ: сразу ведём на регистрацию
+    window.location.replace("Register.html");
+  </script>
 </head>
-
-<body class="min-h-screen px-4 pt-6 pb-28">
-
-  <!-- EMPTY CONTAINER (orders removed) -->
-  <main></main>
-
-  <!-- Supabase -->
-  <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
-  <script src="js/supabase.js"></script>
-
-</body>
+<body></body>
 </html>
