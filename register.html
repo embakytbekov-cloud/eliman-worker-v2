@@ -1,77 +1,147 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-  <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>Registration | Eliman Worker</title>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Worker Registration</title>
 
-  <script src="https://cdn.tailwindcss.com"></script>
-  <link rel="stylesheet" href="css/style.css">
+<style>
+body{
+  background:#020617;
+  color:#e5e7eb;
+  font-family:system-ui;
+  padding:20px;
+}
+.hidden{display:none}
+
+.card{
+  border:1px solid #1e293b;
+  border-radius:16px;
+  padding:16px;
+  margin-bottom:12px;
+  cursor:pointer;
+}
+.card.selected{
+  background:#14b8a6;
+  color:#021617;
+}
+
+.input{
+  width:100%;
+  padding:14px;
+  margin-bottom:12px;
+  border-radius:12px;
+  border:1px solid #1e293b;
+  background:#020617;
+  color:white;
+}
+
+.btn{
+  width:100%;
+  padding:16px;
+  margin-top:16px;
+  border:none;
+  border-radius:16px;
+  background:#14b8a6;
+  font-size:18px;
+  font-weight:700;
+}
+
+.photo{
+  width:160px;
+  height:160px;
+  border:2px dashed #14b8a6;
+  border-radius:50%;
+  display:flex;
+  align-items:center;
+  justify-content:center;
+  margin:30px auto;
+  cursor:pointer;
+}
+</style>
 </head>
 
-<body class="p-5 pb-20">
+<body>
 
-  <!-- STEP 0 – LANGUAGE -->
-  <section id="stepLang">
-    <h2 id="langTitle" class="text-3xl font-bold mb-2">Choose language</h2>
-    <p id="langSubtitle" class="text-gray-500 mb-6">
-      Select your language. Registration will be shown in your language.
-    </p>
+<!-- STEP 0 -->
+<section id="stepLang">
+  <h2>Choose language</h2>
+  <div class="card lang" data-lang="en">English</div>
+  <div class="card lang" data-lang="ru">Русский</div>
+  <div class="card lang" data-lang="es">Español</div>
+</section>
 
-    <div class="card lang" data-lang="en">English</div>
-    <div class="card lang" data-lang="ru">Русский</div>
-    <div class="card lang" data-lang="es">Español</div>
-  </section>
+<!-- STEP 1 -->
+<section id="step1" class="hidden">
+  <h2>Profile</h2>
+  <input class="input" placeholder="Full name">
+  <input class="input" placeholder="Phone">
+  <button id="toStep2" class="btn">Next</button>
+</section>
 
-  <!-- STEP 1 – PROFILE -->
-  <section id="step1" class="hidden">
-    <h2 id="step1Title" class="text-3xl font-bold mb-2">Profile</h2>
-    <p id="step1Subtitle" class="text-gray-500 mb-4">Enter your details</p>
+<!-- STEP 2 -->
+<section id="step2" class="hidden">
+  <h2>Category</h2>
+  <div class="card cat">Appliance Repair</div>
+  <div class="card cat">Cleaning</div>
+  <div class="card cat">Handyman</div>
+  <div class="card cat">Locksmith</div>
+  <div class="card cat">Moving</div>
+  <div class="card cat">Smart Home</div>
+  <div class="card cat">Tire & Roadside</div>
+  <button id="toStep3" class="btn">Next</button>
+</section>
 
-    <input id="fullName" class="input-box" placeholder="Full name">
-    <input id="phone" class="input-box" placeholder="Phone number">
-    <input id="street" class="input-box" placeholder="Street, house">
-    <input id="apt" class="input-box" placeholder="Apartment / office">
-    <div class="flex gap-3">
-      <input id="city" class="input-box" placeholder="City">
-      <input id="state" class="input-box" placeholder="State">
-    </div>
-    <input id="zip" class="input-box" placeholder="ZIP code">
+<!-- STEP 3 -->
+<section id="step3" class="hidden">
+  <h2>Profile Photo</h2>
+  <div id="photoBox" class="photo">Click</div>
+  <input id="photoInput" type="file" accept="image/*" hidden>
+  <button class="btn">Finish</button>
+</section>
 
-    <button id="next1" class="btn-main">Next</button>
-  </section>
+<script>
+const stepLang = document.getElementById("stepLang");
+const step1 = document.getElementById("step1");
+const step2 = document.getElementById("step2");
+const step3 = document.getElementById("step3");
 
-  <!-- STEP 2 – CATEGORY -->
-  <section id="step2" class="hidden">
-    <h2 id="step2Title" class="text-3xl font-bold mb-2">Category</h2>
-    <p id="step2Subtitle" class="text-gray-500 mb-4">
-      Please choose your service category.
-    </p>
+document.querySelectorAll(".lang").forEach(b=>{
+  b.onclick=()=>{
+    stepLang.classList.add("hidden");
+    step1.classList.remove("hidden");
+  }
+});
 
-    <div class="card category" data-cat="Appliance">Appliance Repair</div>
-    <div class="card category" data-cat="Cleaning">Cleaning</div>
-    <div class="card category" data-cat="Handyman">Handyman</div>
-    <div class="card category" data-cat="Locksmith">Locksmith</div>
-    <div class="card category" data-cat="Moving">Moving</div>
-    <div class="card category" data-cat="SmartHome">Smart Home</div>
-    <div class="card category" data-cat="Tire">Tire & Roadside</div>
+document.getElementById("toStep2").onclick=()=>{
+  step1.classList.add("hidden");
+  step2.classList.remove("hidden");
+};
 
-    <button id="next2" class="btn-main">Next</button>
-  </section>
+document.querySelectorAll(".cat").forEach(c=>{
+  c.onclick=()=>{
+    document.querySelectorAll(".cat").forEach(x=>x.classList.remove("selected"));
+    c.classList.add("selected");
+  };
+});
 
-  <!-- STEP 3 – PHOTO -->
-  <section id="step3" class="hidden text-center">
-    <h2 id="step3Title" class="text-3xl font-bold mb-3">Profile photo</h2>
+document.getElementById("toStep3").onclick=()=>{
+  step2.classList.add("hidden");
+  step3.classList.remove("hidden");
+};
 
-    <!-- iOS FIX -->
-    <label class="photo-box">
-      <span id="photoText">Click to upload</span>
-      <input id="photoInput" type="file" accept="image/*" hidden>
-    </label>
+const photoBox=document.getElementById("photoBox");
+const photoInput=document.getElementById("photoInput");
 
-    <button id="finishBtn" class="btn-main">Finish</button>
-  </section>
+photoBox.onclick=()=>photoInput.click();
+photoInput.onchange=e=>{
+  const file=e.target.files[0];
+  if(!file)return;
+  photoBox.style.backgroundImage=`url(${URL.createObjectURL(file)})`;
+  photoBox.style.backgroundSize="cover";
+  photoBox.textContent="";
+};
+</script>
 
-  <script src="js/register_v2.js"></script>
 </body>
 </html>
