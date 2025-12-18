@@ -2,79 +2,99 @@
 <html lang="en">
 <head>
   <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
-  <title>Orders | Eliman Worker</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Available Orders | Eliman Worker</title>
 
   <!-- Tailwind -->
   <script src="https://cdn.tailwindcss.com"></script>
 
-  <!-- Supabase -->
-  <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
-  <script src="js/supabase.js"></script>
-
   <style>
     body {
-      background:#020617;
-      color:white;
+      background:#000;
+      color:#fff;
+      font-family: system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
     }
+
     .card {
-      background: linear-gradient(145deg, #020617, #020617);
-      border-radius: 20px;
-      padding: 16px;
-      margin-bottom: 16px;
-      box-shadow: inset 0 0 0 1px rgba(255,255,255,0.05);
+      background:#111;
+      border:1px solid #2a2a2a;
+      border-radius:16px;
+      padding:16px;
+      margin-bottom:14px;
     }
-    .price {
-      background:#14b8a6;
-      color:#020617;
-      padding:6px 14px;
-      border-radius:999px;
-      font-weight:bold;
-    }
+
     .muted {
-      color:#94a3b8;
-      font-size:13px;
+      color:#9ca3af;
+      font-size:14px;
     }
+
+    .price {
+      background:#3fc060;
+      color:#000;
+      padding:6px 12px;
+      border-radius:999px;
+      font-weight:700;
+      font-size:16px;
+    }
+
     .details {
-      color:#14b8a6;
+      color:#3fc060;
+      font-weight:600;
+    }
+
+    /* Bottom nav */
+    .nav {
+      position:fixed;
+      bottom:0;
+      left:0;
+      right:0;
+      background:#050505;
+      border-top:1px solid #1f1f1f;
+      display:flex;
+      justify-content:space-around;
+      padding:10px 0;
+    }
+
+    .nav a {
+      color:#9ca3af;
+      font-size:12px;
+      text-align:center;
+    }
+
+    .nav a.active {
+      color:#3fc060;
       font-weight:600;
     }
   </style>
 </head>
 
-<body class="p-4">
+<body class="pb-24">
 
-  <h1 class="text-2xl font-bold mb-4">Available Orders</h1>
+  <!-- HEADER -->
+  <header class="p-5">
+    <h1 class="text-2xl font-bold">Available Orders</h1>
+    <p class="muted mt-1">Orders for your category</p>
+  </header>
 
-  <!-- ORDERS -->
-  <div id="ordersList"></div>
+  <!-- ORDERS LIST -->
+  <main class="px-5" id="ordersList">
+    <!-- orders.js вставит карточки сюда -->
+  </main>
 
   <!-- BOTTOM NAV -->
-  <div class="fixed bottom-0 left-0 right-0 bg-slate-950 border-t border-slate-800
-            flex justify-around items-center h-20 text-sm">
+  <nav class="nav">
+    <a href="#" class="active">🧳<br>Orders</a>
+    <a href="#">⏱<br>Active</a>
+    <a href="#">🛒<br>Market</a>
+    <a href="#">👤<br>Profile</a>
+  </nav>
 
-  <div class="flex flex-col items-center text-teal-400 font-semibold">
-    <span class="text-2xl mb-1">🧳</span>
-    <span>Orders</span>
-  </div>
+  <!-- Supabase -->
+  <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+  <script src="js/supabase.js"></script>
 
-  <div class="flex flex-col items-center text-slate-400">
-    <span class="text-2xl mb-1">⏱</span>
-    <span>Active</span>
-  </div>
-
-  <div class="flex flex-col items-center text-slate-400">
-    <span class="text-2xl mb-1">🛒</span>
-    <span>Market</span>
-  </div>
-
-  <div class="flex flex-col items-center text-slate-400">
-    <span class="text-2xl mb-1">👤</span>
-    <span>Profile</span>
-  </div>
-
-</div>
-
+  <!-- Orders logic -->
   <script src="js/orders.js"></script>
+
 </body>
 </html>
