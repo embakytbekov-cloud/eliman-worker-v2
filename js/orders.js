@@ -1,9 +1,9 @@
 const ordersList = document.getElementById("ordersList");
 
-// 1. Пытаемся получить ID
+// 1. Получаем ID пользователя
 let workerId = localStorage.getItem("telegram_id");
 
-// ДОБАВКА ДЛЯ ТЕСТА: Если localStorage пустой, пробуем вытащить из Telegram SDK напрямую
+// Если в localStorage пусто, пробуем вытащить напрямую из Telegram SDK
 if (!workerId && window.Telegram?.WebApp?.initDataUnsafe?.user) {
     workerId = String(window.Telegram.WebApp.initDataUnsafe.user.id);
     localStorage.setItem("telegram_id", workerId);
@@ -16,7 +16,7 @@ if (!workerId) {
         <div class="text-center p-5">
             <p class='text-red-500 font-bold'>Worker not identified</p>
             <p class='text-gray-400 text-sm mt-2'>Please restart the app from Telegram</p>
-            <button onclick="location.reload()" class="bg-green-500 text-black px-4 py-2 rounded mt-4">Retry</button>
+            <button onclick="location.reload()" class="bg-[#3fc060] text-black px-4 py-2 rounded mt-4">Retry</button>
         </div>
     `;
 } else {
@@ -27,10 +27,10 @@ async function loadOrders() {
     try {
         console.log("DEBUG: Loading worker profile for ID:", workerId);
         
-        // 1️⃣ Получаем категорию воркера
+        // 1️⃣ Получаем навыки (skills) воркера из таблицы
         const { data: worker, error: workerError } = await window.db
             .from("workers")
-            .select("category")
+            .select("skills") // В твоей базе колонка называется skills
             .eq("telegram_id", workerId)
             .single();
 
@@ -44,14 +44,23 @@ async function loadOrders() {
             return;
         }
 
-        const category = worker.category; // Берем как есть (например, "Cleaning")
-        console.log("DEBUG: Worker category is:", category);
+        // В базе skills — это массив ["cleaning", "handyman"]. Берем первый элемент.
+        const mainSkill = (worker.skills && worker.skills.length > 0) 
+                          ? worker.skills[0] 
+                          : null;
 
-        // 2️⃣ Загружаем заказы. Используем ilike для поиска без учета регистра
+        if (!mainSkill) {
+            ordersList.innerHTML = "<p class='text-yellow-500 text-center mt-10'>No skills assigned to your profile</p>";
+            return;
+        }
+
+        console.log("DEBUG: Worker main skill is:", mainSkill);
+
+        // 2️⃣ Загружаем заказы, где service_type похож на наш основной навык
         const { data: orders, error: ordersError } = await window.db
             .from("orders")
             .select("*")
-            .ilike("service_type", `%${category}%`)
+            .ilike("service_type", `%${mainSkill}%`) 
             .order("date", { ascending: true });
 
         if (ordersError) {
@@ -62,29 +71,29 @@ async function loadOrders() {
 
         if (!orders || orders.length === 0) {
             ordersList.innerHTML = `
-                <div class="text-center mt-10">
-                    <p class="text-gray-400">No orders available for category:</p>
-                    <p class="text-green-500 font-bold">${category}</p>
+                <div class="text-center mt-10 p-5">
+                    <p class="text-gray-400 italic">No orders available for category:</p>
+                    <p class="text-[#3fc060] font-bold text-xl mt-2">${mainSkill}</p>
                 </div>
             `;
             return;
         }
 
-        // 3️⃣ Отрисовка
+        // 3️⃣ Отрисовка карточек
         ordersList.innerHTML = "";
         orders.forEach(order => {
             ordersList.innerHTML += `
                 <div class="card bg-[#111] border border-[#2a2a2a] p-4 rounded-2xl mb-4">
                     <div class="flex justify-between items-start mb-2">
                         <div>
-                            <h2 class="text-lg font-semibold">${order.service_name || 'No Name'}</h2>
+                            <h2 class="text-lg font-semibold">${order.service_name || 'Service'}</h2>
                             <p class="text-gray-400 text-sm">${order.service_type}</p>
                         </div>
                         <div class="bg-[#3fc060] text-black px-3 py-1 rounded-full font-bold">
                             $${order.price || 0}
                         </div>
                     </div>
-                    <div class="flex justify-between items-center mt-3 text-sm text-gray-400">
+                    <div class="flex flex-col gap-1 mt-3 text-sm text-gray-400">
                         <div>📍 ${order.address || 'No address'}</div>
                         <div>🕒 ${order.date || ''} ${order.time || ''}</div>
                     </div>
@@ -94,6 +103,6 @@ async function loadOrders() {
 
     } catch (err) {
         console.error("Critical Error:", err);
-        ordersList.innerHTML = "<p class='text-red-500 text-center'>Critical app error</p>";
+        ordersList.innerHTML = "<p class='text-red-500 text-center mt-10'>Critical app error</p>";
     }
 }
