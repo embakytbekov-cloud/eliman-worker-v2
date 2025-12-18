@@ -1,7 +1,7 @@
 let currentLang = "en";
 let selectedCategory = null;
 
-/* ---------- TRANSLATIONS ---------- */
+/* ---------- i18n ---------- */
 const i18n = {
   en: {
     langTitle: "Choose language",
@@ -9,7 +9,7 @@ const i18n = {
     step1Title: "Profile",
     step1Subtitle: "Enter your details",
     step2Title: "Category",
-    step2Subtitle: "Choose your category",
+    step2Subtitle: "Choose your service category",
     step3Title: "Profile photo",
     next: "Next",
     finish: "Finish",
@@ -17,9 +17,9 @@ const i18n = {
   },
   ru: {
     langTitle: "Выберите язык",
-    langSubtitle: "Регистрация будет на выбранном языке",
+    langSubtitle: "Регистрация будет показана на выбранном языке",
     step1Title: "Профиль",
-    step1Subtitle: "Введите данные",
+    step1Subtitle: "Введите ваши данные",
     step2Title: "Категория",
     step2Subtitle: "Выберите категорию",
     step3Title: "Фото профиля",
@@ -31,7 +31,7 @@ const i18n = {
     langTitle: "Elige idioma",
     langSubtitle: "Registro en este idioma",
     step1Title: "Perfil",
-    step1Subtitle: "Ingresa datos",
+    step1Subtitle: "Ingresa tus datos",
     step2Title: "Categoría",
     step2Subtitle: "Elige categoría",
     step3Title: "Foto de perfil",
@@ -87,21 +87,23 @@ next2.onclick = () => {
   step3.classList.remove("hidden");
 };
 
-/* ---------- PHOTO ---------- */
-photoBox.onclick = () => photoInput.click();
-
+/* ---------- PHOTO (iOS SAFE) ---------- */
 photoInput.onchange = e => {
   const file = e.target.files[0];
   if (!file) return;
+
   const url = URL.createObjectURL(file);
-  photoBox.style.backgroundImage = `url(${url})`;
-  photoBox.style.backgroundSize = "cover";
-  photoBox.textContent = "";
+  const box = photoInput.parentElement;
+
+  box.style.backgroundImage = `url(${url})`;
+  box.style.backgroundSize = "cover";
+  box.style.backgroundPosition = "center";
+  photoText.style.display = "none";
 };
 
-/* ---------- FINISH (SAFE) ---------- */
+/* ---------- FINISH ---------- */
 finishBtn.onclick = () => {
-  alert("Finish works ✅\nSupabase можно подключить позже");
+  alert("Registration step completed ✅");
 };
 
-applyTranslations(); 
+applyTranslations();
