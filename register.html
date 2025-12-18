@@ -1,72 +1,100 @@
 <!DOCTYPE html>
-<html lang="en">
+<html lang="ru">
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <title>Registration | Eliman Worker</title>
 
   <script src="https://cdn.tailwindcss.com"></script>
-  <link rel="stylesheet" href="css/style.css?v=1000">
+
+  <style>
+    body { background:#0f172a; color:white; }
+    .input-box {
+      width:100%; background:#1e293b; padding:14px;
+      border-radius:10px; margin-bottom:14px; color:white;
+    }
+    .card { background:#1e293b; padding:16px; border-radius:14px; margin-bottom:12px; cursor:pointer; }
+    .card.selected { background:#22c55e; color:black; }
+    .photo-box {
+      width:160px; height:160px; border-radius:100%;
+      border:2px dashed #64748b; margin:40px auto; display:flex;
+      align-items:center; justify-content:center; cursor:pointer;
+      color:#94a3b8;
+    }
+    .btn-main {
+      width:100%; background:#22c55e; padding:16px; border-radius:14px;
+      font-size:18px; font-weight:700; margin-top:20px;
+    }
+  </style>
 </head>
 
 <body class="p-5 pb-20">
 
-<!-- STEP 0 -->
-<section id="stepLang">
-  <h2 class="text-3xl font-bold mb-2">Choose language</h2>
-  <p class="text-gray-500 mb-6">
-    Select your language. Registration will be shown in your language.
-  </p>
+  <!-- STEP 0 – LANGUAGE -->
+  <section id="stepLang">
+    <h2 class="text-3xl font-bold mb-2" id="langTitle">Choose language</h2>
+    <p class="text-gray-400 mb-6" id="langSubtitle">
+      Select your language. Registration will be shown in your language.
+    </p>
 
-  <div class="card lang" data-lang="en">English</div>
-  <div class="card lang" data-lang="ru">Русский</div>
-  <div class="card lang" data-lang="es">Español</div>
-</section>
+    <div class="card lang" data-lang="en">English</div>
+    <div class="card lang" data-lang="ru">Русский</div>
+    <div class="card lang" data-lang="es">Español</div>
+  </section>
 
-<!-- STEP 1 -->
-<section id="step1" class="hidden">
-  <h2 class="text-3xl font-bold mb-2">Profile</h2>
 
-  <input id="fullName" class="input-box" placeholder="Full name">
-  <input id="phone" class="input-box" placeholder="Phone">
-  <input id="street" class="input-box" placeholder="Street">
-  <input id="apt" class="input-box" placeholder="Apartment">
-  <input id="city" class="input-box" placeholder="City">
-  <input id="state" class="input-box" placeholder="State">
-  <input id="zip" class="input-box" placeholder="ZIP">
+  <!-- STEP 1 – PROFILE -->
+  <section id="step1" class="hidden">
+    <h2 class="text-3xl font-bold mb-2" id="step1Title">Профиль</h2>
+    <p class="text-gray-400 mb-4" id="step1Subtitle">Введите данные</p>
 
-  <button class="btn-main" id="next1">Next</button>
-</section>
+    <input id="fullName" class="input-box" placeholder="Полное имя">
+    <input id="phone" class="input-box" placeholder="Телефон">
+    <input id="street" class="input-box" placeholder="Улица, дом">
+    <input id="apt" class="input-box" placeholder="Квартира / офис">
+    <div class="flex gap-3">
+      <input id="city" class="input-box" placeholder="Город">
+      <input id="state" class="input-box" placeholder="Штат">
+    </div>
+    <input id="zip" class="input-box" placeholder="ZIP код">
 
-<!-- STEP 2 -->
-<section id="step2" class="hidden">
-  <h2 class="text-3xl font-bold mb-4">Category</h2>
+    <button class="btn-main" id="next1">Далее</button>
+  </section>
 
-  <div class="card category" data-cat="Appliance">Appliance Repair</div>
-  <div class="card category" data-cat="Cleaning">Cleaning</div>
-  <div class="card category" data-cat="Handyman">Handyman</div>
-  <div class="card category" data-cat="Locksmith">Locksmith</div>
-  <div class="card category" data-cat="Moving">Moving</div>
-  <div class="card category" data-cat="SmartHome">Smart Home</div>
-  <div class="card category" data-cat="Tire">Tire & Roadside</div>
 
-  <button class="btn-main" id="next2">Next</button>
-</section>
+  <!-- STEP 2 – CATEGORY -->
+  <section id="step2" class="hidden">
+    <h2 class="text-3xl font-bold mb-2" id="step2Title">Категория</h2>
+    <p class="text-gray-400 mb-4" id="step2Subtitle">
+      Пожалуйста выберите свою категорию чтобы обслуживать клиентов.
+    </p>
 
-<!-- STEP 3 -->
-<section id="step3" class="hidden text-center">
-  <h2 class="text-3xl font-bold mb-4">Profile photo</h2>
+    <div class="card category" data-cat="Appliance">Appliance Repair</div>
+    <div class="card category" data-cat="Cleaning">Cleaning</div>
+    <div class="card category" data-cat="Handyman">Handyman</div>
+    <div class="card category" data-cat="Locksmith">Locksmith</div>
+    <div class="card category" data-cat="Moving">Moving</div>
+    <div class="card category" data-cat="SmartHome">Smart Home</div>
+    <div class="card category" data-cat="Tire">Tire & Roadside</div>
 
-  <!-- ✅ iOS SAFE -->
-  <label for="photoInput" class="photo-box" id="photoBox">
-    Click to upload
-  </label>
+    <button class="btn-main" id="next2">Далее</button>
+  </section>
 
-  <input type="file" id="photoInput" accept="image/*" hidden>
 
-  <button class="btn-main" id="finishBtn">Finish</button>
-</section>
+  <!-- STEP 3 – PHOTO -->
+  <section id="step3" class="hidden text-center">
+    <h2 class="text-3xl font-bold mb-3" id="step3Title">Фото профиля</h2>
 
-<script src="js/register_v2.js?v=1000"></script>
+    <div class="photo-box" id="photoBox">Click to upload</div>
+    <input type="file" id="photoInput" class="hidden" accept="image/*">
+
+    <button class="btn-main" id="finishBtn">Завершить</button>
+  </section>
+
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+<script src="js/supabase.js"></script>
+<script src="js/register_v2.js"></script>
+
 </body>
 </html>
+ 
