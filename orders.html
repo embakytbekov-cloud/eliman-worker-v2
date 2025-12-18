@@ -98,21 +98,26 @@
   </nav>
 
   <script src="https://telegram.org/js/telegram-web-app.js"></script>
-  
   <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
   
-  <script src="js/supabase.js"></script>
-  <script src="js/orders.js"></script>
-
   <script>
-    // Инициализация Telegram WebApp
+    // 1. Сначала инициализируем Telegram и сохраняем ID как строку
     if (window.Telegram && window.Telegram.WebApp) {
       const tg = window.Telegram.WebApp;
-      tg.expand(); // Развернуть на весь экран
+      tg.expand();
       tg.headerColor = '#000000';
       tg.backgroundColor = '#000000';
+      
+      if (tg.initDataUnsafe?.user?.id) {
+        const userId = String(tg.initDataUnsafe.user.id);
+        localStorage.setItem("telegram_id", userId);
+        console.log("ID сохранен в HTML:", userId);
+      }
     }
   </script>
+
+  <script src="js/supabase.js"></script>
+  <script src="js/orders.js"></script>
 
 </body>
 </html>
