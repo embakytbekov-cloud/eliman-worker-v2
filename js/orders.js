@@ -4,10 +4,32 @@ const ordersList = document.getElementById("ordersList");
 const params = new URLSearchParams(window.location.search);
 const workerId = params.get("worker_id");
 
+if (!workerId) {
+  ordersList.innerHTML = "<p class='text-red-500'>Worker not identified</p>";
+  throw new Error("worker_id missing");
+}
+
 async function loadOrders() {
-  const { data, error } = await window.db
+  // 1️⃣ получаем категорию worker
+  const { data: worker, error: workerError } = await window.db
+    .from("workers")
+    .select("category")
+    .eq("telegram_id", workerId)
+    .single();
+
+  if (workerError || !worker) {
+    console.error(workerError);
+    ordersList.innerHTML = "<p class='text-red-500'>Failed to load worker</p>";
+    return;
+  }
+
+  const workerCategory = worker.category;
+
+  // 2️⃣ загружаем ТОЛЬКО ордера этой категории
+  const { data: orders, error } = await window.db
     .from("orders")
     .select("*")
+    .eq("service_type", workerCategory)
     .order("date", { ascending: true });
 
   if (error) {
@@ -16,9 +38,18 @@ async function loadOrders() {
     return;
   }
 
+  if (orders.length === 0) {
+    ordersList.innerHTML = `
+      <p class="text-slate-400 text-center mt-10">
+        No orders available for your category
+      </p>
+    `;
+    return;
+  }
+
   ordersList.innerHTML = "";
 
-  data.forEach(order => {
+  orders.forEach(order => {
     ordersList.innerHTML += `
       <div class="card">
         <div class="flex justify-between items-start mb-2">
@@ -45,7 +76,7 @@ async function loadOrders() {
     `;
   });
 
-  // 🔥 АКТИВИРУЕМ КНОПКИ
+  // 3️⃣ переход на details
   document.querySelectorAll(".more-details").forEach(btn => {
     btn.addEventListener("click", () => {
       const orderId = btn.dataset.id;
@@ -57,10 +88,11 @@ async function loadOrders() {
 
 function getPrice(type) {
   switch (type) {
-    case "cleaning": return 120;
-    case "handyman": return 80;
-    case "moving": return 200;
-    case "locksmith": return 150;
+    case "Cleaning": return 120;
+    case "Handyman": return 80;
+    case "Moving": return 200;
+    case "Locksmith": return 150;
+    case "Appliance": return 100;
     default: return 100;
   }
 }
