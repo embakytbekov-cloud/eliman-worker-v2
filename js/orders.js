@@ -1,6 +1,6 @@
 const ordersList = document.getElementById("ordersList");
 
-// получаем worker_id (на будущее)
+// получаем worker_id
 const params = new URLSearchParams(window.location.search);
 const workerId = params.get("worker_id");
 
@@ -35,10 +35,23 @@ async function loadOrders() {
         </div>
 
         <div class="mt-3 text-right">
-          <span class="details">More details →</span>
+          <button 
+            class="details more-details"
+            data-id="${order.id}">
+            More details →
+          </button>
         </div>
       </div>
     `;
+  });
+
+  // 🔥 АКТИВИРУЕМ КНОПКИ
+  document.querySelectorAll(".more-details").forEach(btn => {
+    btn.addEventListener("click", () => {
+      const orderId = btn.dataset.id;
+      window.location.href =
+        `order-details.html?order_id=${orderId}&worker_id=${workerId}`;
+    });
   });
 }
 
