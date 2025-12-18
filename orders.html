@@ -15,7 +15,6 @@
       -webkit-tap-highlight-color: transparent;
     }
 
-    /* Плавное появление карточек */
     #ordersList {
       animation: fadeIn 0.5s ease-in-out;
     }
@@ -25,7 +24,6 @@
       to { opacity: 1; transform: translateY(0); }
     }
 
-    /* Стиль нижней навигации */
     .nav-blur {
       background: rgba(10, 10, 10, 0.8);
       backdrop-filter: blur(10px);
@@ -39,14 +37,12 @@
       justify-content: center;
       font-size: 10px;
       color: #9ca3af;
-      transition: color 0.2s;
     }
 
     .nav-item.active {
       color: #3fc060;
     }
 
-    /* Индикатор загрузки */
     .loader {
       border: 3px solid #1f1f1f;
       border-top: 3px solid #3fc060;
@@ -101,17 +97,16 @@
   <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
   
   <script>
-    // 1. Сначала инициализируем Telegram и сохраняем ID как строку
+    // Фикс для синхронизации ID с базой данных
     if (window.Telegram && window.Telegram.WebApp) {
       const tg = window.Telegram.WebApp;
       tg.expand();
-      tg.headerColor = '#000000';
-      tg.backgroundColor = '#000000';
       
       if (tg.initDataUnsafe?.user?.id) {
-        const userId = String(tg.initDataUnsafe.user.id);
-        localStorage.setItem("telegram_id", userId);
-        console.log("ID сохранен в HTML:", userId);
+        // Принудительно превращаем в строку и убираем лишнее
+        const cleanId = String(tg.initDataUnsafe.user.id).trim();
+        localStorage.setItem("telegram_id", cleanId);
+        console.log("Clean ID for Database:", cleanId);
       }
     }
   </script>
