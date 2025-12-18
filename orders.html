@@ -1,100 +1,104 @@
-<!DOCTYPE html>
-<html lang="en">
-<head>
-  <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>Available Orders | Eliman Worker</title>
+const ordersList = document.getElementById("ordersList");
 
-  <!-- Tailwind -->
-  <script src="https://cdn.tailwindcss.com"></script>
+// 1. Получаем ID пользователя
+let workerId = localStorage.getItem("telegram_id");
 
-  <style>
-    body {
-      background:#000;
-      color:#fff;
-      font-family: system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+// Если в localStorage пусто, пробуем вытащить напрямую из Telegram SDK
+if (!workerId && window.Telegram?.WebApp?.initDataUnsafe?.user) {
+    workerId = String(window.Telegram.WebApp.initDataUnsafe.user.id);
+    localStorage.setItem("telegram_id", workerId);
+}
+
+console.log("DEBUG: Worker ID is:", workerId);
+
+if (!workerId) {
+    ordersList.innerHTML = `
+        <div class="text-center p-5">
+            <p class='text-red-500 font-bold'>Worker not identified</p>
+            <p class='text-gray-400 text-sm mt-2'>Please restart the app from Telegram</p>
+            <button onclick="location.reload()" class="bg-[#3fc060] text-black px-4 py-2 rounded mt-4">Retry</button>
+        </div>
+    `;
+} else {
+    loadOrders();
+}
+
+async function loadOrders() {
+    try {
+        console.log("DEBUG: Loading worker profile for ID:", workerId);
+        
+        // 1️⃣ Получаем навыки (skills) воркера из таблицы
+        // В твоей базе колонка называется skills, а не category
+        const { data: worker, error: workerError } = await window.db
+            .from("workers")
+            .select("skills") 
+            .eq("telegram_id", workerId)
+            .single();
+
+        if (workerError || !worker) {
+            console.error("Worker DB Error:", workerError);
+            ordersList.innerHTML = `
+                <p class='text-red-500 text-center mt-10'>
+                    Worker not found in database.<br>
+                    <span class="text-xs text-gray-500">ID: ${workerId}</span>
+                </p>`;
+            return;
+        }
+
+        // Обрабатываем массив skills: ["cleaning", "handyman"]
+        const skillsArray = worker.skills || [];
+        if (skillsArray.length === 0) {
+            ordersList.innerHTML = "<p class='text-yellow-500 text-center mt-10'>No skills assigned to your profile</p>";
+            return;
+        }
+
+        // 2️⃣ Загружаем заказы. Ищем те, где service_type совпадает с любым из твоих навыков
+        const { data: orders, error: ordersError } = await window.db
+            .from("orders")
+            .select("*")
+            .in("service_type", skillsArray) // Проверяем соответствие любому навыку из списка
+            .order("date", { ascending: true });
+
+        if (ordersError) {
+            console.error("Orders DB Error:", ordersError);
+            ordersList.innerHTML = "<p class='text-red-500 text-center mt-10'>Failed to load orders from DB</p>";
+            return;
+        }
+
+        if (!orders || orders.length === 0) {
+            ordersList.innerHTML = `
+                <div class="text-center mt-10 p-5">
+                    <p class="text-gray-400 italic">No orders available for your categories:</p>
+                    <p class="text-[#3fc060] font-bold text-xl mt-2">${skillsArray.join(", ")}</p>
+                </div>
+            `;
+            return;
+        }
+
+        // 3️⃣ Отрисовка карточек
+        ordersList.innerHTML = "";
+        orders.forEach(order => {
+            ordersList.innerHTML += `
+                <div class="card bg-[#111] border border-[#2a2a2a] p-4 rounded-2xl mb-4">
+                    <div class="flex justify-between items-start mb-2">
+                        <div>
+                            <h2 class="text-lg font-semibold">${order.service_name || 'Service'}</h2>
+                            <p class="text-gray-400 text-sm">${order.service_type}</p>
+                        </div>
+                        <div class="bg-[#3fc060] text-black px-3 py-1 rounded-full font-bold">
+                            $${order.price || 0}
+                        </div>
+                    </div>
+                    <div class="flex flex-col gap-1 mt-3 text-sm text-gray-400">
+                        <div>📍 ${order.address || 'No address'}</div>
+                        <div>🕒 ${order.date || ''} ${order.time || ''}</div>
+                    </div>
+                </div>
+            `;
+        });
+
+    } catch (err) {
+        console.error("Critical Error:", err);
+        ordersList.innerHTML = "<p class='text-red-500 text-center mt-10'>Critical app error</p>";
     }
-
-    .card {
-      background:#111;
-      border:1px solid #2a2a2a;
-      border-radius:16px;
-      padding:16px;
-      margin-bottom:14px;
-    }
-
-    .muted {
-      color:#9ca3af;
-      font-size:14px;
-    }
-
-    .price {
-      background:#3fc060;
-      color:#000;
-      padding:6px 12px;
-      border-radius:999px;
-      font-weight:700;
-      font-size:16px;
-    }
-
-    .details {
-      color:#3fc060;
-      font-weight:600;
-    }
-
-    /* Bottom nav */
-    .nav {
-      position:fixed;
-      bottom:0;
-      left:0;
-      right:0;
-      background:#050505;
-      border-top:1px solid #1f1f1f;
-      display:flex;
-      justify-content:space-around;
-      padding:10px 0;
-    }
-
-    .nav a {
-      color:#9ca3af;
-      font-size:12px;
-      text-align:center;
-    }
-
-    .nav a.active {
-      color:#3fc060;
-      font-weight:600;
-    }
-  </style>
-</head>
-
-<body class="pb-24">
-
-  <!-- HEADER -->
-  <header class="p-5">
-    <h1 class="text-2xl font-bold">Available Orders</h1>
-    <p class="muted mt-1">Orders for your category</p>
-  </header>
-
-  <!-- ORDERS LIST -->
-  <main class="px-5" id="ordersList">
-    <!-- orders.js вставит карточки сюда -->
-  </main>
-
-  <!-- BOTTOM NAV -->
-  <nav class="nav">
-    <a href="#" class="active">🧳<br>Orders</a>
-    <a href="#">⏱<br>Active</a>
-    <a href="#">🛒<br>Market</a>
-    <a href="#">👤<br>Profile</a>
-  </nav>
-
-  <!-- Supabase -->
-  <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
-  <script src="js/supabase.js"></script>
-
-  <!-- Orders logic -->
-  <script src="js/orders.js"></script>
-
-</body>
-</html>
+}
