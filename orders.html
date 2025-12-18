@@ -1,116 +1,118 @@
-const ordersList = document.getElementById("ordersList");
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no" />
+  <title>Доступные заказы | Eliman Worker</title>
 
-// 1. Получаем ID пользователя (сначала из памяти, потом напрямую из Telegram)
-let workerId = localStorage.getItem("telegram_id");
+  <script src="https://cdn.tailwindcss.com"></script>
 
-if (!workerId && window.Telegram?.WebApp?.initDataUnsafe?.user) {
-    workerId = String(window.Telegram.WebApp.initDataUnsafe.user.id);
-    localStorage.setItem("telegram_id", workerId);
-}
-
-console.log("DEBUG: Worker ID is:", workerId);
-
-if (!workerId) {
-    ordersList.innerHTML = `
-        <div class="text-center p-5">
-            <p class='text-red-500 font-bold text-lg'>Worker not identified</p>
-            <p class='text-gray-400 text-sm mt-2'>Please restart the app from Telegram</p>
-            <button onclick="location.reload()" class="bg-[#3fc060] text-black px-6 py-3 rounded-xl font-bold mt-6 w-full">Retry</button>
-        </div>
-    `;
-} else {
-    loadOrders();
-}
-
-async function loadOrders() {
-    try {
-        console.log("DEBUG: Loading worker profile for ID:", workerId);
-        
-        // 1️⃣ Получаем навыки (skills) воркера. В твоей базе это колонка "skills"
-        const { data: worker, error: workerError } = await window.db
-            .from("workers")
-            .select("skills") 
-            .eq("telegram_id", workerId)
-            .single();
-
-        if (workerError || !worker) {
-            console.error("Worker DB Error:", workerError);
-            ordersList.innerHTML = `
-                <div class="text-center mt-10 p-5">
-                    <p class='text-red-500 font-bold'>Worker not found in database</p>
-                    <p class='text-gray-500 text-xs mt-2'>Your ID: ${workerId}</p>
-                    <p class='text-gray-400 text-sm mt-4 text-left bg-[#111] p-3 rounded'>
-                        Брат, проверь в Supabase, есть ли запись с этим ID в таблице workers.
-                    </p>
-                </div>`;
-            return;
-        }
-
-        // В базе skills — это массив ["cleaning", "handyman"]
-        const skillsArray = worker.skills || [];
-        if (skillsArray.length === 0) {
-            ordersList.innerHTML = `
-                <div class="text-center mt-10 px-5">
-                    <p class="text-yellow-500 font-bold">No skills selected</p>
-                    <p class="text-gray-400 text-sm mt-2">Go to profile and choose your categories.</p>
-                </div>
-            `;
-            return;
-        }
-
-        console.log("DEBUG: Worker skills are:", skillsArray);
-
-        // 2️⃣ Загружаем заказы, которые подходят под любой из твоих навыков
-        const { data: orders, error: ordersError } = await window.db
-            .from("orders")
-            .select("*")
-            .in("service_type", skillsArray) // Сопоставляем список навыков со списком заказов
-            .order("date", { ascending: true });
-
-        if (ordersError) {
-            console.error("Orders DB Error:", ordersError);
-            ordersList.innerHTML = "<p class='text-red-500 text-center mt-10'>Failed to load orders from DB</p>";
-            return;
-        }
-
-        if (!orders || orders.length === 0) {
-            ordersList.innerHTML = `
-                <div class="text-center mt-10 p-5">
-                    <p class="text-gray-400 italic">No orders available for your categories:</p>
-                    <p class="text-[#3fc060] font-bold text-lg mt-2">${skillsArray.join(", ")}</p>
-                </div>
-            `;
-            return;
-        }
-
-        // 3️⃣ Отрисовка карточек заказов
-        ordersList.innerHTML = "";
-        orders.forEach(order => {
-            ordersList.innerHTML += `
-                <div class="card bg-[#111] border border-[#2a2a2a] p-5 rounded-2xl mb-4 shadow-lg">
-                    <div class="flex justify-between items-start mb-3">
-                        <div>
-                            <h2 class="text-xl font-bold text-white">${order.service_name || 'Service'}</h2>
-                            <p class="text-[#3fc060] text-sm font-medium uppercase tracking-wider">${order.service_type}</p>
-                        </div>
-                        <div class="bg-[#3fc060] text-black px-4 py-1.5 rounded-full font-black text-lg">
-                            $${order.price || 0}
-                        </div>
-                    </div>
-                    <div class="flex flex-col gap-2 mt-4 text-sm text-gray-300">
-                        <div class="flex items-center gap-2">
-                            <span>📍</span> <span>${order.address || 'No address provided'}</span>
-                        </div>
-                        <div class="flex items-center gap-2">
-                            <span>🕒</span> <span>${order.date || ''} at ${order.time || ''}</span>
-                        </div>
-                    </div>
-                </div>
-            `;
-        });
-
-    } catch (err) {
-        console.error("Critical Error:", err);
-        ordersList.innerHTML = "<p class='text-red-500 text-center mt-10'>Critical app error. Check console.</p>";
+  <style>
+    body {
+      background: #000;
+      color: #fff;
+      font-family: system-ui, -apple-system, sans-serif;
+      -webkit-tap-highlight-color: transparent;
     }
-}
+
+    /* Плавное появление карточек */
+    #ordersList {
+      animation: fadeIn 0.5s ease-in-out;
+    }
+
+    @keyframes fadeIn {
+      from { opacity: 0; transform: translateY(10px); }
+      to { opacity: 1; transform: translateY(0); }
+    }
+
+    /* Стиль нижней навигации */
+    .nav-blur {
+      background: rgba(10, 10, 10, 0.8);
+      backdrop-filter: blur(10px);
+      border-top: 1px solid #1f1f1f;
+    }
+
+    .nav-item {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      font-size: 10px;
+      color: #9ca3af;
+      transition: color 0.2s;
+    }
+
+    .nav-item.active {
+      color: #3fc060;
+    }
+
+    /* Индикатор загрузки */
+    .loader {
+      border: 3px solid #1f1f1f;
+      border-top: 3px solid #3fc060;
+      border-radius: 50%;
+      width: 30px;
+      height: 30px;
+      animation: spin 1s linear infinite;
+      margin: 20px auto;
+    }
+
+    @keyframes spin {
+      0% { transform: rotate(0deg); }
+      100% { transform: rotate(360deg); }
+    }
+  </style>
+</head>
+
+<body class="pb-24">
+
+  <header class="p-6 sticky top-0 bg-black z-10">
+    <h1 class="text-3xl font-extrabold tracking-tight">Заказы</h1>
+    <p class="text-gray-400 text-sm mt-1">Доступно для вашей категории</p>
+  </header>
+
+  <main class="px-5" id="ordersList">
+    <div class="text-center mt-20">
+      <div class="loader"></div>
+      <p class="text-gray-500 text-sm mt-4">Поиск подходящих заказов...</p>
+    </div>
+  </main>
+
+  <nav class="fixed bottom-0 left-0 right-0 h-20 nav-blur flex items-center justify-around px-4 z-20">
+    <a href="orders.html" class="nav-item active">
+      <svg class="w-6 h-6 mb-1" fill="currentColor" viewBox="0 0 24 24"><path d="M10 20v-6h4v6h5v-8h3L12 3 2 12h3v8z"/></svg>
+      <span>Заказы</span>
+    </a>
+    <a href="#" class="nav-item">
+      <svg class="w-6 h-6 mb-1" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z"/></svg>
+      <span>Активные</span>
+    </a>
+    <a href="#" class="nav-item">
+      <svg class="w-6 h-6 mb-1" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M16 11V7a4 4 0 00-8 0v4M5 9h14l1 12H4L5 9z"/></svg>
+      <span>Маркет</span>
+    </a>
+    <a href="profile.html" class="nav-item">
+      <svg class="w-6 h-6 mb-1" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z"/></svg>
+      <span>Профиль</span>
+    </a>
+  </nav>
+
+  <script src="https://telegram.org/js/telegram-web-app.js"></script>
+  
+  <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+  
+  <script src="js/supabase.js"></script>
+  <script src="js/orders.js"></script>
+
+  <script>
+    // Инициализация Telegram WebApp
+    if (window.Telegram && window.Telegram.WebApp) {
+      const tg = window.Telegram.WebApp;
+      tg.expand(); // Развернуть на весь экран
+      tg.headerColor = '#000000';
+      tg.backgroundColor = '#000000';
+    }
+  </script>
+
+</body>
+</html>
