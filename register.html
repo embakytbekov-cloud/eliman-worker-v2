@@ -5,11 +5,8 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <title>Registration | Eliman Worker</title>
 
-  <!-- Tailwind -->
   <script src="https://cdn.tailwindcss.com"></script>
-
-  <!-- MAIN STYLE -->
-  <link rel="stylesheet" href="css/style.css">
+  <link rel="stylesheet" href="css/style.css?v=1000">
 </head>
 
 <body class="p-5 pb-20">
@@ -29,26 +26,21 @@
 <!-- STEP 1 -->
 <section id="step1" class="hidden">
   <h2 class="text-3xl font-bold mb-2">Profile</h2>
-  <p class="text-gray-500 mb-4">Enter your details</p>
 
   <input id="fullName" class="input-box" placeholder="Full name">
-  <input id="phone" class="input-box" placeholder="Phone number">
-  <input id="street" class="input-box" placeholder="Street, house">
-  <input id="apt" class="input-box" placeholder="Apartment / office">
+  <input id="phone" class="input-box" placeholder="Phone">
+  <input id="street" class="input-box" placeholder="Street">
+  <input id="apt" class="input-box" placeholder="Apartment">
+  <input id="city" class="input-box" placeholder="City">
+  <input id="state" class="input-box" placeholder="State">
+  <input id="zip" class="input-box" placeholder="ZIP">
 
-  <div class="flex gap-3">
-    <input id="city" class="input-box" placeholder="City">
-    <input id="state" class="input-box" placeholder="State">
-  </div>
-
-  <input id="zip" class="input-box" placeholder="ZIP code">
   <button class="btn-main" id="next1">Next</button>
 </section>
 
 <!-- STEP 2 -->
 <section id="step2" class="hidden">
-  <h2 class="text-3xl font-bold mb-2">Category</h2>
-  <p class="text-gray-500 mb-4">Choose your category</p>
+  <h2 class="text-3xl font-bold mb-4">Category</h2>
 
   <div class="card category" data-cat="Appliance">Appliance Repair</div>
   <div class="card category" data-cat="Cleaning">Cleaning</div>
@@ -63,23 +55,18 @@
 
 <!-- STEP 3 -->
 <section id="step3" class="hidden text-center">
-  <h2 class="text-3xl font-bold mb-3">Profile photo</h2>
+  <h2 class="text-3xl font-bold mb-4">Profile photo</h2>
 
-  <!-- ❗ iOS FIX -->
+  <!-- ✅ iOS SAFE -->
   <label for="photoInput" class="photo-box" id="photoBox">
     Click to upload
   </label>
 
-  <input
-    type="file"
-    id="photoInput"
-    accept="image/*"
-    style="display:none"
-  >
+  <input type="file" id="photoInput" accept="image/*" hidden>
 
   <button class="btn-main" id="finishBtn">Finish</button>
 </section>
 
-<script src="js/register_v2.js"></script>
+<script src="js/register_v2.js?v=1000"></script>
 </body>
 </html>
