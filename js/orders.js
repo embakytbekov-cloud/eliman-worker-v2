@@ -29,7 +29,7 @@ async function loadOrders() {
   const { data: orders, error: ordersError } = await window.db
     .from("orders")
     .select("*")
-    .ilike("service_type", category)
+    .ilike("service_type", `%${category}%`)
     .order("date", { ascending: true });
 
   if (ordersError) {
