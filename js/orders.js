@@ -1,17 +1,16 @@
 const ordersList = document.getElementById("ordersList");
 
-// worker_id из URL
-const params = new URLSearchParams(window.location.search);
-const workerId = params.get("worker_id");
+// ✅ БЕРЁМ telegram_id ИЗ localStorage
+const workerId = localStorage.getItem("telegram_id");
 
 if (!workerId) {
   ordersList.innerHTML =
     "<p class='text-red-500'>Worker not identified</p>";
-  throw new Error("worker_id missing");
+  throw new Error("telegram_id missing in localStorage");
 }
 
 async function loadOrders() {
-  // 1️⃣ получаем воркера
+  // 1️⃣ Получаем категорию воркера
   const { data: worker, error: workerError } = await window.db
     .from("workers")
     .select("category")
@@ -19,25 +18,24 @@ async function loadOrders() {
     .single();
 
   if (workerError || !worker) {
-    console.error(workerError);
+    console.error("Worker error:", workerError);
     ordersList.innerHTML =
       "<p class='text-red-500'>Failed to load worker</p>";
     return;
   }
 
-  const category = worker.category; // БЕЗ lowerCase
-
+  const category = worker.category.toLowerCase().trim();
   console.log("Worker category:", category);
 
-  // 2️⃣ грузим ордера ТОЛЬКО этой категории
+  // 2️⃣ Загружаем ордера ТОЛЬКО этой категории
   const { data: orders, error: ordersError } = await window.db
     .from("orders")
     .select("*")
-    .eq("service_type", category)
+    .ilike("service_type", category)
     .order("date", { ascending: true });
 
   if (ordersError) {
-    console.error(ordersError);
+    console.error("Orders error:", ordersError);
     ordersList.innerHTML =
       "<p class='text-red-500'>Failed to load orders</p>";
     return;
@@ -69,21 +67,8 @@ async function loadOrders() {
           <div>📍 ${order.address}</div>
           <div>🕒 ${order.date} ${order.time}</div>
         </div>
-
-        <div class="mt-3 text-right">
-          <button class="details more-details" data-id="${order.id}">
-            More details →
-          </button>
-        </div>
       </div>
     `;
-  });
-
-  document.querySelectorAll(".more-details").forEach(btn => {
-    btn.addEventListener("click", () => {
-      window.location.href =
-        `order-details.html?order_id=${btn.dataset.id}&worker_id=${workerId}`;
-    });
   });
 }
 
