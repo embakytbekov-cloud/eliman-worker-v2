@@ -11,7 +11,7 @@ if (!workerId) {
 }
 
 async function loadOrders() {
-  // 1️⃣ Получаем категорию воркера
+  // 1️⃣ получаем воркера
   const { data: worker, error: workerError } = await window.db
     .from("workers")
     .select("category")
@@ -19,26 +19,25 @@ async function loadOrders() {
     .single();
 
   if (workerError || !worker) {
-    console.error("Worker error:", workerError);
+    console.error(workerError);
     ordersList.innerHTML =
       "<p class='text-red-500'>Failed to load worker</p>";
     return;
   }
 
-  // 🔥 ПРИВОДИМ К LOWERCASE
-  const category = worker.category.toLowerCase().trim();
+  const category = worker.category; // БЕЗ lowerCase
 
   console.log("Worker category:", category);
 
-  // 2️⃣ Загружаем ордера ТОЛЬКО этой категории
+  // 2️⃣ грузим ордера ТОЛЬКО этой категории
   const { data: orders, error: ordersError } = await window.db
     .from("orders")
     .select("*")
-    .ilike("service_type", category) // 🔥 ВАЖНО
+    .eq("service_type", category)
     .order("date", { ascending: true });
 
   if (ordersError) {
-    console.error("Orders error:", ordersError);
+    console.error(ordersError);
     ordersList.innerHTML =
       "<p class='text-red-500'>Failed to load orders</p>";
     return;
@@ -72,9 +71,7 @@ async function loadOrders() {
         </div>
 
         <div class="mt-3 text-right">
-          <button
-            class="details more-details"
-            data-id="${order.id}">
+          <button class="details more-details" data-id="${order.id}">
             More details →
           </button>
         </div>
@@ -82,12 +79,10 @@ async function loadOrders() {
     `;
   });
 
-  // 3️⃣ More details
   document.querySelectorAll(".more-details").forEach(btn => {
     btn.addEventListener("click", () => {
-      const orderId = btn.dataset.id;
       window.location.href =
-        `order-details.html?order_id=${orderId}&worker_id=${workerId}`;
+        `order-details.html?order_id=${btn.dataset.id}&worker_id=${workerId}`;
     });
   });
 }
