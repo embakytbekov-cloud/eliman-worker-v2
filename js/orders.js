@@ -1,16 +1,15 @@
 const ordersList = document.getElementById("ordersList");
 
-// ✅ БЕРЁМ telegram_id ИЗ localStorage
 const workerId = localStorage.getItem("telegram_id");
 
 if (!workerId) {
   ordersList.innerHTML =
     "<p class='text-red-500'>Worker not identified</p>";
-  throw new Error("telegram_id missing in localStorage");
+  throw new Error("telegram_id missing");
 }
 
 async function loadOrders() {
-  // 1️⃣ Получаем категорию воркера
+  // 1️⃣ get worker category
   const { data: worker, error: workerError } = await window.db
     .from("workers")
     .select("category")
@@ -25,9 +24,8 @@ async function loadOrders() {
   }
 
   const category = worker.category.toLowerCase().trim();
-  console.log("Worker category:", category);
 
-  // 2️⃣ Загружаем ордера ТОЛЬКО этой категории
+  // 2️⃣ load orders by category
   const { data: orders, error: ordersError } = await window.db
     .from("orders")
     .select("*")
@@ -35,7 +33,6 @@ async function loadOrders() {
     .order("date", { ascending: true });
 
   if (ordersError) {
-    console.error("Orders error:", ordersError);
     ordersList.innerHTML =
       "<p class='text-red-500'>Failed to load orders</p>";
     return;
