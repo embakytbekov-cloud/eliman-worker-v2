@@ -5,18 +5,16 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <title>Eliman Worker</title>
 
-  <!-- Telegram Mini App -->
   <script src="https://telegram.org/js/telegram-web-app.js"></script>
 
   <script>
-    // Telegram ready (не ломает, если не в TG)
     if (window.Telegram && window.Telegram.WebApp) {
       Telegram.WebApp.ready();
       Telegram.WebApp.expand();
     }
 
-    // 👉 КАК РАНЬШЕ: сразу ведём на регистрацию
-    window.location.replace("Register.html");
+    // ⚠️ lowercase!
+    window.location.replace("register.html");
   </script>
 </head>
 <body></body>
