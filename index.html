@@ -1,34 +1,21 @@
-<script src="https://telegram.org/js/telegram-web-app.js"></script>
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Eliman Worker</title>
 
-<script>
-  const tg = window.Telegram.WebApp
-  tg.ready()
-  tg.expand()
+  <script src="https://telegram.org/js/telegram-web-app.js"></script>
 
-  async function initWorkerAndGo() {
-    const telegramId = tg.initDataUnsafe?.user?.id
-    if (!telegramId) {
-      alert('No Telegram user')
-      return
+  <script>
+    if (window.Telegram && window.Telegram.WebApp) {
+      Telegram.WebApp.ready();
+      Telegram.WebApp.expand();
     }
 
-    // ⬇️ ТУТ Supabase
-    const { data: worker } = await supabase
-      .from('workers')
-      .select('*')
-      .eq('telegram_id', telegramId)
-      .maybeSingle()
-
-    if (!worker) {
-      await supabase.from('workers').insert({
-        telegram_id: telegramId,
-        categories: []
-      })
-    }
-
-    // ⬇️ ТОЛЬКО ПОСЛЕ ЭТОГО
-    window.location.replace("register.html")
-  }
-
-  initWorkerAndGo()
-</script>
+    // ⚠️ lowercase!
+    window.location.replace("register.html");
+  </script>
+</head>
+<body></body>
+</html>
