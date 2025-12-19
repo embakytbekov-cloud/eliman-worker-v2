@@ -9,35 +9,38 @@
   <script src="https://cdn.tailwindcss.com"></script>
 </head>
 
-<body class="bg-black text-white p-5">
+<body class="bg-black text-white p-5 pb-20">
 
-  <!-- STEP 1 -->
+  <!-- STEP 1 PROFILE -->
   <section id="step1">
-    <h2 class="text-2xl font-bold mb-4">Profile</h2>
+    <h2 class="text-3xl font-bold mb-2">Profile</h2>
+    <p class="text-gray-400 mb-4">Enter your data</p>
 
-    <input id="fullName" class="w-full mb-3 p-3 bg-gray-900 rounded" placeholder="Full name">
-    <input id="phone" class="w-full mb-3 p-3 bg-gray-900 rounded" placeholder="Phone">
+    <input id="fullName" class="w-full mb-3 p-4 bg-gray-900 rounded" placeholder="Full name">
+    <input id="phone" class="w-full mb-3 p-4 bg-gray-900 rounded" placeholder="Phone">
 
-    <button id="next1" class="w-full bg-green-500 text-black p-3 rounded font-bold">
+    <button id="next1" class="w-full bg-green-500 text-black p-4 rounded font-bold">
       Next
     </button>
   </section>
 
-  <!-- STEP 2 -->
+  <!-- STEP 2 CATEGORY -->
   <section id="step2" class="hidden">
-    <h2 class="text-2xl font-bold mb-4">Choose category</h2>
+    <h2 class="text-3xl font-bold mb-2">Choose category</h2>
+    <p class="text-gray-400 mb-4">Orders will come only by this category</p>
 
-    <!-- ВАЖНО: data-cat = lowercase -->
-    <div class="category p-4 mb-2 bg-gray-900 rounded" data-cat="cleaning">Cleaning</div>
-    <div class="category p-4 mb-2 bg-gray-900 rounded" data-cat="handyman">Handyman</div>
-    <div class="category p-4 mb-2 bg-gray-900 rounded" data-cat="moving">Moving</div>
-    <div class="category p-4 mb-2 bg-gray-900 rounded" data-cat="locksmith">Locksmith</div>
+    <!-- ВАЖНО: data-cat lowercase -->
+    <div class="category p-4 mb-3 bg-gray-900 rounded cursor-pointer" data-cat="cleaning">Cleaning</div>
+    <div class="category p-4 mb-3 bg-gray-900 rounded cursor-pointer" data-cat="handyman">Handyman</div>
+    <div class="category p-4 mb-3 bg-gray-900 rounded cursor-pointer" data-cat="moving">Moving</div>
+    <div class="category p-4 mb-3 bg-gray-900 rounded cursor-pointer" data-cat="locksmith">Locksmith</div>
 
-    <button id="finish" class="w-full bg-green-500 text-black p-3 rounded font-bold mt-4">
-      Finish
+    <button id="finish" class="w-full bg-green-500 text-black p-4 rounded font-bold mt-4">
+      Finish registration
     </button>
   </section>
 
+  <!-- SCRIPTS -->
   <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
   <script src="js/supabase.js"></script>
   <script src="js/register_v2.js"></script>
