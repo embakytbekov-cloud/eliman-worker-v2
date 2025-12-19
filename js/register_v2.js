@@ -29,9 +29,11 @@ const i18n = {
     finish: "Finish",
     categoryAlert: "Please select a category",
     finishAlert: "Registration completed!",
+    dbError: "Database error",
     saveError: "Error while saving data",
     uploadError: "Error while uploading photo"
   },
+
   ru: {
     langTitle: "Выберите язык",
     langSubtitle: "Выберите язык. Регистрация будет показана на нём.",
@@ -53,18 +55,48 @@ const i18n = {
     finish: "Завершить",
     categoryAlert: "Выберите категорию",
     finishAlert: "Регистрация завершена!",
+    dbError: "Ошибка базы данных",
     saveError: "Ошибка при сохранении данных",
     uploadError: "Ошибка при загрузке фото"
+  },
+
+  es: {
+    langTitle: "Elige tu idioma",
+    langSubtitle: "La registración aparecerá en este idioma.",
+    step1Title: "Perfil",
+    step1Subtitle: "Ingresa tu información personal y dirección.",
+    fullName: "Nombre completo",
+    phone: "Teléfono",
+    street: "Calle, número",
+    apt: "Departamento / oficina (opcional)",
+    city: "Ciudad",
+    state: "Estado",
+    zip: "Código ZIP",
+    next: "Siguiente",
+    step2Title: "Categoría",
+    step2Subtitle: "Elige tu categoría principal de trabajo.",
+    next2: "Siguiente",
+    step3Title: "Foto de perfil",
+    photoHint: "Toca para subir foto",
+    finish: "Finalizar",
+    categoryAlert: "Por favor elige una categoría",
+    finishAlert: "¡Registro completado!",
+    dbError: "Error de base de datos",
+    saveError: "Error al guardar datos",
+    uploadError: "Error al subir la foto"
   }
 };
+
 
 // ----------------------------
 // APPLY TRANSLATIONS
 // ----------------------------
 function applyTranslations() {
   const t = i18n[currentLang];
+
   document.getElementById("langTitle").textContent = t.langTitle;
   document.getElementById("langSubtitle").textContent = t.langSubtitle;
+
   document.getElementById("step1Title").textContent = t.step1Title;
   document.getElementById("step1Subtitle").textContent = t.step1Subtitle;
   document.getElementById("fullName").placeholder = t.fullName;
@@ -75,58 +107,50 @@ function applyTranslations() {
   document.getElementById("state").placeholder = t.state;
   document.getElementById("zip").placeholder = t.zip;
   document.getElementById("next1").textContent = t.next;
+
   document.getElementById("step2Title").textContent = t.step2Title;
   document.getElementById("step2Subtitle").textContent = t.step2Subtitle;
   document.getElementById("next2").textContent = t.next2;
+
   document.getElementById("step3Title").textContent = t.step3Title;
   document.getElementById("photoBox").textContent = t.photoHint;
   document.getElementById("finishBtn").textContent = t.finish;
 }
 
+
 // ----------------------------
-// TELEGRAM + WORKER INIT
+// TELEGRAM ID DETECTION
 // ----------------------------
-const tg = window.Telegram.WebApp;
-tg.ready();
+let telegramId = null;
+let workerKey = null;
 
-const telegramId = tg.initDataUnsafe?.user?.id;
-let CURRENT_WORKER = null;
+(function detectTelegram() {
+  const tg = window.Telegram && window.Telegram.WebApp
+    ? window.Telegram.WebApp
+    : null;
 
-async function getOrCreateWorker() {
-  const { data: worker } = await db
-    .from("workers")
-    .select("*")
-    .eq("telegram_id", telegramId)
-    .maybeSingle();
+  if (tg) {
+    try { tg.ready(); } catch (_) {}
 
-  if (worker) return worker;
+    if (tg.initDataUnsafe?.user?.id) {
+      telegramId = String(tg.initDataUnsafe.user.id);
+    }
+  }
 
-  const { data: newWorker } = await db
-    .from("workers")
-    .insert({
-      telegram_id: telegramId,
-      categories: []
-    })
-    .select()
-    .single();
+  workerKey = telegramId || `anon_${Date.now()}`;
+})();
 
-  return newWorker;
-}
-
-getOrCreateWorker().then(w => {
-  CURRENT_WORKER = w;
-});
 
 // ----------------------------
 // STEP SWITCHING
 // ----------------------------
 document.querySelectorAll(".lang").forEach(btn => {
-  btn.onclick = () => {
+  btn.addEventListener("click", () => {
     currentLang = btn.dataset.lang;
     applyTranslations();
     stepLang.classList.add("hidden");
     step1.classList.remove("hidden");
-  };
+  });
 });
 
 next1.onclick = () => {
@@ -151,6 +175,7 @@ next2.onclick = () => {
   step3.classList.remove("hidden");
 };
 
+
 // ----------------------------
 // PHOTO PREVIEW
 // ----------------------------
@@ -159,6 +184,7 @@ photoBox.onclick = () => photoInput.click();
 photoInput.onchange = e => {
   const file = e.target.files[0];
   if (!file) return;
+
   const url = URL.createObjectURL(file);
   photoBox.style.backgroundImage = `url(${url})`;
   photoBox.style.backgroundSize = "cover";
@@ -166,55 +192,70 @@ photoInput.onchange = e => {
   photoBox.style.color = "transparent";
 };
 
+
 // ----------------------------
-// SAVE (UPDATE ONLY)
+// SAVE TO SUPABASE
 // ----------------------------
 finishBtn.onclick = async () => {
   const t = i18n[currentLang];
-  let photo_url = null;
+
+  const full_name = fullName.value.trim();
+  const phoneValue = phone.value.trim();
+  const streetValue = street.value.trim();
+  const aptValue = apt.value.trim();
+  const cityValue = city.value.trim();
+  const stateValue = state.value.trim();
+  const zipValue = zip.value.trim();
 
   const file = photoInput.files[0];
+  let photo_url = null;
+
   if (file) {
-    const ext = file.name.split(".").pop();
-    const path = `worker_${telegramId}.${ext}`;
+    const ext = file.name.split(".").pop() || "jpg";
+    const filePath = `worker_${workerKey}.${ext}`;
 
-    const { error } = await db.storage
+    const { error: uploadErr } = await db.storage
       .from("workers_photos")
-      .upload(path, file, { upsert: true });
+      .upload(filePath, file, { upsert: true });
 
-    if (error) {
+    if (uploadErr) {
       alert(t.uploadError);
+      console.error(uploadErr);
       return;
     }
 
-    photo_url = db.storage
-      .from("workers_photos")
-      .getPublicUrl(path).data.publicUrl;
+    photo_url = db.storage.from("workers_photos").getPublicUrl(filePath).data.publicUrl;
   }
 
-  const { error } = await db
-    .from("workers")
-    .update({
-      full_name: fullName.value.trim(),
-      phone: phone.value.trim(),
-      street: street.value.trim(),
-      apt: apt.value.trim(),
-      city: city.value.trim(),
-      state: state.value.trim(),
-      zipcode: zip.value.trim(),
-      categories: [selectedCategory],
-      language: currentLang,
-      photo: photo_url
-    })
-    .eq("telegram_id", telegramId);
+  const { error: insertErr } = await db.from("workers").insert({
+    telegram_id: workerKey,
+    full_name,
+    phone: phoneValue,
+    street: streetValue,
+    apt: aptValue,
+    city: cityValue,
+    state: stateValue,
+    zipcode: zipValue,
+    category: selectedCategory,
+    language: currentLang,
+    lang: currentLang,
+    photo: photo_url,
+    accepted_terms: false,
+    accepted_privacy: false,
+    accepted_work_agreement: false
+  });
 
-  if (error) {
+  if (insertErr) {
     alert(t.saveError);
+    console.error(insertErr);
     return;
   }
 
-  window.location.href = `terms.html?lang=${currentLang}`;
+  window.location.href = `terms.html?lang=${currentLang}&worker_id=${workerKey}`;
 };
 
+
+// ----------------------------
+// INIT
 // ----------------------------
 applyTranslations();
