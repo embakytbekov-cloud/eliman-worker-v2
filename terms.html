@@ -1,0 +1,198 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Terms & Conditions | Eliman Worker</title>
+
+  <script src="https://cdn.tailwindcss.com"></script>
+  <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+  <script src="js/supabase.js"></script>
+
+  <style>
+    body { background:#0f172a; color:white; padding:20px;}
+    .btn-disabled { opacity:0.4; pointer-events:none; }
+  </style>
+</head>
+
+<body>
+
+  <h1 id="title" class="text-3xl font-bold mb-4">Terms & Conditions</h1>
+
+  <div id="content"
+       class="bg-slate-800 p-4 rounded-xl h-80 overflow-y-scroll text-sm leading-relaxed mb-6">
+  </div>
+
+  <label class="flex items-center mb-6">
+    <input id="agree" type="checkbox" class="mr-3">
+    <span id="agreeLabel">I agree to the Terms & Conditions</span>
+  </label>
+
+  <button id="nextBtn"
+          class="w-full bg-green-500 py-3 rounded-xl font-bold text-lg btn-disabled">
+    Accept & Continue
+  </button>
+
+<script>
+  const agree = document.getElementById("agree");
+  const nextBtn = document.getElementById("nextBtn");
+  const title = document.getElementById("title");
+  const content = document.getElementById("content");
+  const agreeLabel = document.getElementById("agreeLabel");
+
+  const params = new URLSearchParams(window.location.search);
+  const lang = params.get("lang") || "en";
+
+  // ✅ ID получаем правильно
+  const workerId = params.get("worker_id");
+
+  const i18n = {
+    en: {
+      title: "Terms & Conditions",
+      agree: "I agree to the Terms & Conditions",
+      next: "Accept & Continue",
+      content: `
+        <h2 class="font-bold text-lg mb-2">1. Platform Role</h2>
+        <p class="mb-4">
+          ELIMAN is a technology platform that connects customers with independent workers.
+          ELIMAN does not employ workers and is not responsible for work performed by them.
+        </p>
+
+        <h2 class="font-bold text-lg mb-2">2. Independent Contractor</h2>
+        <p class="mb-4">
+          By using this platform, you agree you are an independent contractor, not an employee,
+          agent, representative, or partner of ELIMAN. You are fully responsible for your taxes,
+          insurance, tools, transportation, and business expenses.
+        </p>
+
+        <h2 class="font-bold text-lg mb-2">3. Liability & Risk</h2>
+        <p class="mb-4">
+          You work at your own risk. ELIMAN is not responsible for injuries, damages,
+          property loss, accidents, legal claims, or disputes. You are responsible for your
+          own insurance and safety.
+        </p>
+
+        <h2 class="font-bold text-lg mb-2">4. Job Acceptance</h2>
+        <p class="mb-4">
+          You may accept or decline any job. ELIMAN is not responsible for cancellations,
+          customer behavior, or job conditions.
+        </p>
+
+        <h2 class="font-bold text-lg mb-2">5. Payments</h2>
+        <p class="mb-4">
+          Workers are paid after job completion. ELIMAN may apply service fees. Fraud or
+          misconduct leads to suspension.
+        </p>
+
+        <h2 class="font-bold text-lg mb-2">6. Indemnification</h2>
+        <p class="mb-4">
+          You agree to indemnify and hold ELIMAN harmless from claims, lawsuits,
+          damages, injuries, legal fees, or losses arising from your work or actions.
+        </p>
+
+        <p class="mb-4">
+          By agreeing, you confirm you understand these Terms and accept all responsibility.
+        </p>
+      `
+    },
+
+    ru: {
+      title: "Условия использования",
+      agree: "Я принимаю Условия использования",
+      next: "Принять и продолжить",
+      content: `
+        <h2 class="font-bold text-lg mb-2">1. Роль платформы</h2>
+        <p class="mb-4">
+          ELIMAN — технологическая платформа, соединяющая клиентов с независимыми исполнителями.
+          ELIMAN не нанимает исполнителей и не несёт ответственности за выполняемую ими работу.
+        </p>
+
+        <h2 class="font-bold text-lg mb-2">2. Независимый подрядчик</h2>
+        <p class="mb-4">
+          Используя платформу, вы подтверждаете, что являетесь независимым подрядчиком,
+          а не сотрудником или агентом ELIMAN. Вы сами отвечаете за налоги, страховку,
+          инструменты и расходы.
+        </p>
+
+        <h2 class="font-bold text-lg mb-2">3. Ответственность и риски</h2>
+        <p class="mb-4">
+          Вы работаете на свой риск. ELIMAN не отвечает за травмы, ущерб, потери,
+          несчастные случаи, споры или претензии. Вы отвечаете за свою безопасность.
+        </p>
+
+        <h2 class="font-bold text-lg mb-2">4. Принятие заказов</h2>
+        <p class="mb-4">
+          Вы можете принимать или отклонять заказы. ELIMAN не отвечает за отмены,
+          поведение клиентов или условия работы.
+        </p>
+
+        <h2 class="font-bold text-lg mb-2">5. Оплата</h2>
+        <p class="mb-4">
+          Оплата производится после завершения работы. ELIMAN может взимать сервисный сбор.
+          Мошенничество ведёт к блокировке.
+        </p>
+
+        <h2 class="font-bold text-lg mb-2">6. Компенсация</h2>
+        <p class="mb-4">
+          Вы соглашаетесь возместить ELIMAN убытки, связанные с претензиями, исками,
+          травмами, ущербом или расходами, возникшими из-за ваших действий.
+        </p>
+
+        <p class="mb-4">
+          Принимая условия, вы подтверждаете, что понимаете и несёте полную ответственность.
+        </p>
+      `
+    },
+
+    es: {
+      title: "Términos y Condiciones",
+      agree: "Acepto los Términos y Condiciones",
+      next: "Aceptar y Continuar",
+      content: `
+        <h2 class="font-bold text-lg mb-2">1. Rol de la plataforma</h2>
+        <p class="mb-4">
+          ELIMAN es una plataforma que conecta clientes con trabajadores independientes.
+        </p>
+      `
+    }
+  };
+
+  // apply language
+  title.textContent = i18n[lang].title;
+  agreeLabel.textContent = i18n[lang].agree;
+  nextBtn.textContent = i18n[lang].next;
+  content.innerHTML = i18n[lang].content;
+
+  // enable button
+  agree.addEventListener("change", () => {
+    agree.checked
+      ? nextBtn.classList.remove("btn-disabled")
+      : nextBtn.classList.add("btn-disabled");
+  });
+
+  // SAVE accepted_terms
+  nextBtn.addEventListener("click", async () => {
+    if (!agree.checked) return;
+
+    if (!workerId) {
+      alert("Worker ID missing");
+      return;
+    }
+
+    const { error } = await window.db
+      .from("workers")
+      .update({ accepted_terms: true })
+      .eq("telegram_id", workerId);  // ✅ FIXED!
+
+    if (error) {
+      console.error(error);
+      alert("Ошибка обновления базы");
+      return;
+    }
+
+    window.location.href = `privacy.html?worker_id=${workerId}&lang=${lang}`;
+  });
+</script>
+
+</body>
+</html>

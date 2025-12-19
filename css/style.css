@@ -1,0 +1,55 @@
+:root {
+  --bg-main:#020617;
+  --card-bg:#020617;
+  --card-border:#1e293b;
+  --text-main:#e5e7eb;
+  --text-muted:#94a3b8;
+  --accent:#14b8a6;
+  --accent-soft:rgba(20,184,166,.12);
+}
+
+body {
+  background: radial-gradient(circle at top, #020617 0%, #000 70%);
+  color: var(--text-main);
+}
+
+.card {
+  border:1px solid var(--card-border);
+  border-radius:18px;
+  padding:16px;
+  margin-bottom:12px;
+}
+
+.card.selected {
+  background:linear-gradient(145deg,#14b8a6,#0ea5e9);
+  color:#021617;
+}
+
+.input-box {
+  width:100%;
+  padding:14px;
+  border-radius:14px;
+  margin-bottom:14px;
+  background:#020617;
+  border:1px solid var(--card-border);
+}
+
+.btn-main {
+  width:100%;
+  padding:16px;
+  border-radius:18px;
+  font-weight:800;
+  background:linear-gradient(135deg,#14b8a6,#0ea5e9);
+}
+
+.photo-box {
+  width:160px;
+  height:160px;
+  border-radius:100%;
+  border:2px dashed var(--accent);
+  margin:40px auto;
+  display:flex;
+  align-items:center;
+  justify-content:center;
+  cursor:pointer;
+}
