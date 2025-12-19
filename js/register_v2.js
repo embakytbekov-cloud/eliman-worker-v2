@@ -162,7 +162,9 @@ document.querySelectorAll(".category").forEach(c => {
   c.onclick = () => {
     document.querySelectorAll(".category").forEach(x => x.classList.remove("selected"));
     c.classList.add("selected");
-    selectedCategory = c.dataset.cat;
+
+    // 🔧 FIX: категория всегда lowercase (совпадает с orders.service_type)
+    selectedCategory = c.dataset.cat.toLowerCase();
   };
 });
 
@@ -224,7 +226,9 @@ finishBtn.onclick = async () => {
       return;
     }
 
-    photo_url = db.storage.from("workers_photos").getPublicUrl(filePath).data.publicUrl;
+    photo_url = db.storage
+      .from("workers_photos")
+      .getPublicUrl(filePath).data.publicUrl;
   }
 
   const { error: insertErr } = await db.from("workers").insert({
@@ -236,7 +240,7 @@ finishBtn.onclick = async () => {
     city: cityValue,
     state: stateValue,
     zipcode: zipValue,
-    category: selectedCategory,
+    category: selectedCategory, // <-- уже lowercase
     language: currentLang,
     lang: currentLang,
     photo: photo_url,
